@@ -9,6 +9,7 @@ import (
 	cloudsecurity "github.com/crowdstrike/terraform-provider-crowdstrike/internal/cloud_security"
 	contentupdatepolicy "github.com/crowdstrike/terraform-provider-crowdstrike/internal/content_update_policy"
 	dataprotection "github.com/crowdstrike/terraform-provider-crowdstrike/internal/data_protection"
+	devicecontrolpolicy "github.com/crowdstrike/terraform-provider-crowdstrike/internal/device_control_policy"
 	"github.com/crowdstrike/terraform-provider-crowdstrike/internal/fcs"
 	"github.com/crowdstrike/terraform-provider-crowdstrike/internal/fim"
 	hostgroups "github.com/crowdstrike/terraform-provider-crowdstrike/internal/host_groups"
@@ -37,6 +38,7 @@ func registerSweepers() {
 	fim.RegisterSweepers()
 	sensorvisibilityexclusion.RegisterSweepers()
 	dataprotection.RegisterSweepers()
+	devicecontrolpolicy.RegisterSweepers()
 	cloudcompliance.RegisterSweepers()
 	cloudgroup.RegisterSweepers()
 	cloudsecurity.RegisterSweepers()

@@ -1,0 +1,1 @@
+terraform import crowdstrike_device_control_policy.example <device_control_policy_id>
