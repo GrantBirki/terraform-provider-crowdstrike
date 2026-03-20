@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -341,11 +342,17 @@ func excludableFieldSchema(description string) schema.SingleNestedAttribute {
 		Optional:    true,
 		Computed:    true,
 		Description: description,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Attributes: map[string]schema.Attribute{
 			"include": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "Regex pattern for inclusion.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"exclude": schema.StringAttribute{
 				Optional:    true,
@@ -428,14 +435,23 @@ func (r *ioaRuleGroupResource) Schema(
 			"modified_by": schema.StringAttribute{
 				Computed:    true,
 				Description: "The user who last modified the rule group.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"modified_on": schema.StringAttribute{
 				Computed:    true,
 				Description: "The timestamp when the rule group was last modified.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"committed_on": schema.StringAttribute{
 				Computed:    true,
 				Description: "The timestamp when the rule group was committed.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"cid": schema.StringAttribute{
 				Computed:    true,
@@ -513,6 +529,9 @@ func (r *ioaRuleGroupResource) Schema(
 							Computed:    true,
 							Description: "Whether the rule is enabled.",
 							Default:     booldefault.StaticBool(false),
+							PlanModifiers: []planmodifier.Bool{
+								boolplanmodifier.UseStateForUnknown(),
+							},
 						},
 						"grandparent_image_filename": excludableFieldSchema("Grandparent image filename match criteria."),
 						"grandparent_command_line":   excludableFieldSchema("Grandparent command line match criteria."),

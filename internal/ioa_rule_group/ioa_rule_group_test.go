@@ -4,8 +4,14 @@ import (
 	"testing"
 
 	"github.com/crowdstrike/gofalcon/falcon/models"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func strPtr(s string) *string {
@@ -160,5 +166,48 @@ func TestConvertIOARuleGroupToList(t *testing.T) {
 				assert.Equal(t, tt.expectedIDs, ids)
 			}
 		})
+	}
+}
+
+func TestIOARuleGroupResourceSchemaPlanModifiers(t *testing.T) {
+	res := NewIOARuleGroupResource()
+
+	var resp resource.SchemaResponse
+	res.Schema(t.Context(), resource.SchemaRequest{}, &resp)
+	require.False(t, resp.Diagnostics.HasError())
+
+	modifiedByAttr, ok := resp.Schema.Attributes["modified_by"].(schema.StringAttribute)
+	require.True(t, ok)
+	require.Len(t, modifiedByAttr.PlanModifiers, 1)
+	assert.IsType(t, stringplanmodifier.UseStateForUnknown(), modifiedByAttr.PlanModifiers[0])
+
+	modifiedOnAttr, ok := resp.Schema.Attributes["modified_on"].(schema.StringAttribute)
+	require.True(t, ok)
+	require.Len(t, modifiedOnAttr.PlanModifiers, 1)
+	assert.IsType(t, stringplanmodifier.UseStateForUnknown(), modifiedOnAttr.PlanModifiers[0])
+
+	committedOnAttr, ok := resp.Schema.Attributes["committed_on"].(schema.StringAttribute)
+	require.True(t, ok)
+	require.Len(t, committedOnAttr.PlanModifiers, 1)
+	assert.IsType(t, stringplanmodifier.UseStateForUnknown(), committedOnAttr.PlanModifiers[0])
+
+	rulesAttr, ok := resp.Schema.Attributes["rules"].(schema.ListNestedAttribute)
+	require.True(t, ok)
+
+	ruleEnabledAttr, ok := rulesAttr.NestedObject.Attributes["enabled"].(schema.BoolAttribute)
+	require.True(t, ok)
+	require.Len(t, ruleEnabledAttr.PlanModifiers, 1)
+	assert.IsType(t, boolplanmodifier.UseStateForUnknown(), ruleEnabledAttr.PlanModifiers[0])
+
+	for _, fieldName := range excludableFieldNames {
+		fieldAttr, ok := rulesAttr.NestedObject.Attributes[fieldName].(schema.SingleNestedAttribute)
+		require.True(t, ok, fieldName)
+		require.Len(t, fieldAttr.PlanModifiers, 1, fieldName)
+		assert.IsType(t, objectplanmodifier.UseStateForUnknown(), fieldAttr.PlanModifiers[0], fieldName)
+
+		includeAttr, ok := fieldAttr.Attributes["include"].(schema.StringAttribute)
+		require.True(t, ok, fieldName)
+		require.Len(t, includeAttr.PlanModifiers, 1, fieldName)
+		assert.IsType(t, stringplanmodifier.UseStateForUnknown(), includeAttr.PlanModifiers[0], fieldName)
 	}
 }
