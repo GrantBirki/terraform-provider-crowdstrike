@@ -8,14 +8,20 @@ import (
 	cloudgroup "github.com/crowdstrike/terraform-provider-crowdstrike/internal/cloud_group"
 	cloudsecurity "github.com/crowdstrike/terraform-provider-crowdstrike/internal/cloud_security"
 	contentupdatepolicy "github.com/crowdstrike/terraform-provider-crowdstrike/internal/content_update_policy"
+	customioc "github.com/crowdstrike/terraform-provider-crowdstrike/internal/custom_ioc"
 	dataprotection "github.com/crowdstrike/terraform-provider-crowdstrike/internal/data_protection"
 	"github.com/crowdstrike/terraform-provider-crowdstrike/internal/fcs"
 	"github.com/crowdstrike/terraform-provider-crowdstrike/internal/fim"
 	hostgroups "github.com/crowdstrike/terraform-provider-crowdstrike/internal/host_groups"
 	installtoken "github.com/crowdstrike/terraform-provider-crowdstrike/internal/install_token"
+	ioaexclusion "github.com/crowdstrike/terraform-provider-crowdstrike/internal/ioa_exclusion"
 	ioarulegroup "github.com/crowdstrike/terraform-provider-crowdstrike/internal/ioa_rule_group"
 	itautomation "github.com/crowdstrike/terraform-provider-crowdstrike/internal/it_automation"
+	mlcertificateexclusion "github.com/crowdstrike/terraform-provider-crowdstrike/internal/ml_certificate_exclusion"
+	mlfilepathexclusion "github.com/crowdstrike/terraform-provider-crowdstrike/internal/ml_file_path_exclusion"
 	preventionpolicy "github.com/crowdstrike/terraform-provider-crowdstrike/internal/prevention_policy"
+	rtrputfile "github.com/crowdstrike/terraform-provider-crowdstrike/internal/rtr_put_file"
+	rtrscript "github.com/crowdstrike/terraform-provider-crowdstrike/internal/rtr_script"
 	sensorupdatepolicy "github.com/crowdstrike/terraform-provider-crowdstrike/internal/sensor_update_policy"
 	sensorvisibilityexclusion "github.com/crowdstrike/terraform-provider-crowdstrike/internal/sensor_visibility_exclusion"
 	usergroup "github.com/crowdstrike/terraform-provider-crowdstrike/internal/user_group"
@@ -35,13 +41,19 @@ func registerSweepers() {
 	contentupdatepolicy.RegisterSweepers()
 	fcs.RegisterSweepers()
 	cloudgoogleregistration.RegisterSweepers()
+	ioaexclusion.RegisterSweepers()
 	ioarulegroup.RegisterSweepers()
 	fim.RegisterSweepers()
 	sensorvisibilityexclusion.RegisterSweepers()
+	mlfilepathexclusion.RegisterSweepers()
 	dataprotection.RegisterSweepers()
+	mlcertificateexclusion.RegisterSweepers()
 	cloudcompliance.RegisterSweepers()
 	cloudgroup.RegisterSweepers()
 	cloudsecurity.RegisterSweepers()
 	itautomation.RegisterSweepers()
+	rtrputfile.RegisterSweepers()
 	usergroup.RegisterSweepers()
+	rtrscript.RegisterSweepers()
+	customioc.RegisterSweepers()
 }

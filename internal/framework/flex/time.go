@@ -1,12 +1,19 @@
 package flex
 
 import (
+	"time"
+
+	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-framework-timetypes/timetypes"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 // RFC3339ValueToFramework converts a string to a Terraform framework timetypes.RFC3339.
 // An empty string returns a null timetypes.RFC3339.
+//
+// Pair with a validator that prevents users from setting empty strings. When the API returns
+// "" for unset fields, normalizing "" to null ensures state matches config and
+// prevents inconsistent result after apply errors.
 func RFC3339ValueToFramework[T ~string](v T) (timetypes.RFC3339, diag.Diagnostics) {
 	if v == "" {
 		return timetypes.NewRFC3339Null(), nil
@@ -17,12 +24,49 @@ func RFC3339ValueToFramework[T ~string](v T) (timetypes.RFC3339, diag.Diagnostic
 
 // RFC3339PointerToFramework converts a string pointer to a Terraform framework timetypes.RFC3339.
 // A nil pointer or empty string returns a null timetypes.RFC3339.
+//
+// Pair with a validator that prevents users from setting empty strings. When the API returns
+// "" for unset fields, normalizing "" to null ensures state matches config and
+// prevents inconsistent result after apply errors.
 func RFC3339PointerToFramework(v *string) (timetypes.RFC3339, diag.Diagnostics) {
 	if v == nil || *v == "" {
 		return timetypes.NewRFC3339Null(), nil
 	}
 
 	return timetypes.NewRFC3339Value(*v)
+}
+
+// DateTimePointerToFramework converts a *strfmt.DateTime to a timetypes.RFC3339.
+// A nil pointer or zero time returns a null timetypes.RFC3339.
+func DateTimePointerToFramework(v *strfmt.DateTime) timetypes.RFC3339 {
+	if v == nil || time.Time(*v).IsZero() {
+		return timetypes.NewRFC3339Null()
+	}
+	return timetypes.NewRFC3339TimeValue(time.Time(*v))
+}
+
+// DateTimeValueToFramework converts a strfmt.DateTime (by value) to a timetypes.RFC3339.
+// A zero time returns a null timetypes.RFC3339.
+func DateTimeValueToFramework(v strfmt.DateTime) timetypes.RFC3339 {
+	t := time.Time(v)
+	if t.IsZero() {
+		return timetypes.NewRFC3339Null()
+	}
+	return timetypes.NewRFC3339TimeValue(t)
+}
+
+// FrameworkToDateTimePointer converts a timetypes.RFC3339 to a *strfmt.DateTime.
+// A null or unknown value returns nil.
+func FrameworkToDateTimePointer(v timetypes.RFC3339) (*strfmt.DateTime, diag.Diagnostics) {
+	if v.IsNull() || v.IsUnknown() {
+		return nil, nil
+	}
+	t, diags := v.ValueRFC3339Time()
+	if diags.HasError() {
+		return nil, diags
+	}
+	dt := strfmt.DateTime(t)
+	return &dt, nil
 }
 
 // FrameworkToRFC3339Pointer converts a Terraform framework timetypes.RFC3339 to a string pointer.
