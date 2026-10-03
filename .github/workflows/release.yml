@@ -13,6 +13,8 @@ on:
 permissions:
   contents: write
 
+cache-mode: none
+
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
@@ -24,7 +26,7 @@ jobs:
       - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version-file: 'go.mod'
-          cache: true
+          cache: false
       - name: Import GPG key
         uses: crowdstrike/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
         id: import_gpg
